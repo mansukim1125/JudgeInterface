@@ -14,7 +14,7 @@ Install Python version 3 above first.
 
 ## Usage
 
-Wiki
+[Wiki](https://github.com/mansukim1125/JudgeInterface/wiki/class-AbstractInterface)
 
 ## LICENSE
 
