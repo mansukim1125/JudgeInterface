@@ -3,7 +3,7 @@ from .abstract import AbstractInterface
 import bcrypt
 
 class UsersInterface(AbstractInterface):
-    def __init__(self, cur) -> None:
+    def __init__(self, cur):
         super().__init__(cur)
         self.create_fields = ['username', 'password', 'email']
         self.retrieve_fields = ['id', 'username', 'email']
