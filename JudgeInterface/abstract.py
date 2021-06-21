@@ -1,9 +1,5 @@
 from typing import Dict, List
-
-if __name__ == '__main__':
-    from JudgeInterface.lib.placeholder import Placeholder
-else: pass
-    # from .lib.placeholder import Placeholder
+from .lib.placeholder import Placeholder
 
 class AbstractInterface:
     """
