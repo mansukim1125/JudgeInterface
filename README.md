@@ -1,15 +1,15 @@
-# JudgeORM
+# JudgeInterface
 
-> An (semi)ORM for Judge
+> A DB Interface for Judge
 
 ## Get Started
 
 Install Python version 3 above first.
 
-1. Install JudgeORM on Python Environment
+1. Install JudgeInterface on Python Environment
 
-   ```
-   pip install JudgeORM
+   ```bash
+   pip install JudgeInterface
    ```
 
 ## Usage
