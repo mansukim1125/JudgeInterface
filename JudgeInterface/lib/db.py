@@ -2,16 +2,16 @@ import mariadb
 import configparser
 
 config = configparser.ConfigParser()
-config.read('../../DB.ini')
+config.read('DB.ini')
 
 def create_connection_pool():
     pool = mariadb.ConnectionPool(
-        user=config['DB']['USER'],
-        password=config['DB']['PASSWORD'],
-        host=config['DB']['HOST'],
-        port=config['DB']['PORT'],
-        pool_name=config['DB']['POOL_NAME'],
-        pool_size=config['DB']['POOL_SIZE']
+        user=config.get('DB', 'USER'),
+        password=config.get('DB', 'PASSWORD'),
+        host=config.get('DB', 'HOST'),
+        port=int(config.get('DB', 'PORT')),
+        pool_name=config.get('DB', 'POOL_NAME'),
+        pool_size=int(config.get('DB', 'POOL_SIZE'))
     )
     return pool
 
@@ -25,10 +25,10 @@ class Connection:
 
         except mariadb.PoolError as e:
             self.pconn = mariadb.connection(
-                user=config['DB']['USER'],
-                password=config['DB']['PASSWORD'],
-                host=config['DB']['HOST'],
-                port=config['DB']['PORT']
+                user=config.get('DB', 'USER'),
+                password=config.get('DB', 'PASSWORD'),
+                host=config.get('DB', 'HOST'),
+                port=config.get('DB', 'PORT')
             )
 
     def cursor(self):
