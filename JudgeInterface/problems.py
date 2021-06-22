@@ -6,7 +6,7 @@ class ProblemsInterface(AbstractInterface):
     def __init__(self, cur) -> None:
         super().__init__(cur)
         self.create_fields = ['title', 'description', 'max_cpu_time', 'max_real_time', 'max_memory', 'author', 'testcases']
-        self.retrieve_fields = ['id', 'title', 'description', 'max_cpu_time', 'max_real_time', 'max_memory', 'author']
+        self.retrieve_fields = ['id', 'title', 'description', 'max_cpu_time', 'max_real_time', 'max_memory', 'author', 'testcases']
         self.update_fields = ['description', 'max_cpu_time', 'max_real_time', 'max_memory', 'testcases']
         self.table_name = 'judge.PROBLEMS'
 
