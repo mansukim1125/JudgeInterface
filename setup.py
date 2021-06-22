@@ -7,7 +7,7 @@ with open(path.join(this_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='JudgeInterface',
-    version='1.0.1',
+    version='1.0.2',
     description='A DB Interface for Judge',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -16,5 +16,5 @@ setup(
     url='https://github.com/mansukim1125/JudgeInterface',
     license='MIT',
     python_requires='>=3',
-    packages=['JudgeInterface']
+    packages=['JudgeInterface', 'JudgeInterface/lib']
 )
