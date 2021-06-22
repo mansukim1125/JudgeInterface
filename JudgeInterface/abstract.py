@@ -59,7 +59,7 @@ class AbstractInterface:
                 FROM {self.table_name}
                 WHERE id = ?
                 ''',
-                id
+                (id,)
             )
             row = self.cur.fetchone()
             if not row: return None
@@ -95,7 +95,7 @@ class AbstractInterface:
             DELETE FROM {self.table_name}
             WHERE id = ?
             ''',
-            (id, )
+            (id,)
         )
 
     def create(self, **data: Dict) -> None:
