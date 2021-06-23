@@ -21,7 +21,10 @@ class AbstractInterface:
 
     def perform_create(self, **data: Dict) -> Dict:
         """data를 self.table_name 테이블에 추가합니다."""
-        query_fields = ', '.join(self.create_fields)
+        
+        valid_fields = [key for key in self.create_fields if key in data]
+        if len(valid_fields) <= 0: return
+        query_fields = ', '.join(valid_fields)
         fields_values = tuple(data.get(key) for key in self.create_fields if key in data)
 
         context = {key: data.get(key) for key in self.create_fields if key in data}
