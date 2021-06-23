@@ -23,7 +23,7 @@ class AbstractInterface:
         """data를 self.table_name 테이블에 추가합니다."""
         
         valid_fields = [key for key in self.create_fields if key in data]
-        if len(valid_fields) <= 0: return
+        if len(valid_fields) <= 0: return None
         query_fields = ', '.join(valid_fields)
         fields_values = tuple(data.get(key) for key in self.create_fields if key in data)
 
@@ -81,7 +81,7 @@ class AbstractInterface:
         """
         fields_values = tuple(data.get(key) for key in self.update_fields if key in data)
         
-        if len(fields_values) <= 0: return # 허용된 fields에 해당하는 data가 없으면 update할 data가 없다는 것을 의미하므로 종료.
+        if len(fields_values) <= 0: return None# 허용된 fields에 해당하는 data가 없으면 update할 data가 없다는 것을 의미하므로 종료.
         
         context = {key: data.get(key) for key in self.update_fields if key in data}
 
