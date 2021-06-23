@@ -19,10 +19,12 @@ class AbstractInterface:
         """
         self.cur = cur
 
-    def perform_create(self, **data: Dict) -> None:
+    def perform_create(self, **data: Dict) -> Dict:
         """data를 self.table_name 테이블에 추가합니다."""
         query_fields = ', '.join(self.create_fields)
-        fields_values = tuple(data.get(key) for key in self.create_fields)
+        fields_values = tuple(data.get(key) for key in self.create_fields if key in data)
+
+        context = {key: data.get(key) for key in self.create_fields if key in data}
 
         self.cur.execute(
             f'''
@@ -33,7 +35,12 @@ class AbstractInterface:
             , fields_values
         )
 
-    def perform_retrieve(self, id: int = None, fields: List[str] = []) -> List:
+        context['id'] = self.cur.lastrowid
+
+        return context
+
+
+    def perform_retrieve(self, id: int = None, fields: List[str] = []):
         """
         id가 지정될 경우 해당하는 한 튜플을, 주어지지 않을 경우 전체 튜플을 SELECT합니다. fields는 속성을 프로젝션할 수 있습니다. 주어지지 않을 경우 전체를 프로젝션합니다.
         """
@@ -65,18 +72,16 @@ class AbstractInterface:
             if not row: return None
             return row
 
-    def perform_update(self, id: int, **data: Dict) -> None:
+    def perform_update(self, id: int, **data: Dict) -> Dict:
         """
         id로 지정되는 한 튜플을 data로 갱신합니다.
         """
-        fields_values = []
-        for key in self.update_fields:
-            if key in data:
-                fields_values.append(data.get(key))
+        fields_values = tuple(data.get(key) for key in self.update_fields if key in data)
         
         if len(fields_values) <= 0: return # 허용된 fields에 해당하는 data가 없으면 update할 data가 없다는 것을 의미하므로 종료.
-        fields_values = tuple(fields_values)
         
+        context = {key: data.get(key) for key in self.update_fields if key in data}
+
         self.cur.execute(
             f'''
             UPDATE {self.table_name}
@@ -85,6 +90,9 @@ class AbstractInterface:
             ''',
             (*fields_values, id)
         )
+        context['id'] = id
+
+        return context
 
     def perform_delete(self, id: int) -> None:
         """
@@ -97,27 +105,28 @@ class AbstractInterface:
             ''',
             (id,)
         )
+        return None
 
-    def create(self, **data: Dict) -> None:
+    def create(self, **data: Dict) -> Dict:
         """
         data를 self.table_name 테이블에 추가합니다. perform_create(self, **data)와 다른 점이라면 오버라이드하여 data의 특정 field를 가공할 수 있습니다.
         """
-        self.perform_create(**data)
+        return self.perform_create(**data)
 
-    def retrieve(self, id: int = None, fields: List[str] = []) -> List:
+    def retrieve(self, id: int = None, fields: List[str] = []):
         """
         id가 지정될 경우 해당하는 한 튜플을, 주어지지 않을 경우 전체 튜플을 SELECT합니다. fields는 속성을 프로젝션할 수 있습니다. 주어지지 않을 경우 전체를 프로젝션합니다.
         """
         return self.perform_retrieve(id, fields)
 
-    def update(self, id: int, **data: Dict) -> None:
+    def update(self, id: int, **data: Dict) -> Dict:
         """
         id로 지정되는 한 튜플을 data로 갱신합니다. perform_update(self, id, **data)와 다른 점이라면 오버라이드하여 data의 특정 field를 가공할 수 있습니다.
         """
-        self.perform_update(id, **data)
+        return self.perform_update(id, **data)
 
     def delete(self, id: int) -> None:
         """
         id로 지정되는 한 튜플을 삭제합니다.
         """
-        self.perform_delete(id)
+        return self.perform_delete(id)
