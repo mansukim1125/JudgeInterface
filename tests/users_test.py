@@ -157,5 +157,12 @@ class UsersInterfaceTest(unittest.TestCase):
 
         self.assertEqual('{}'.format(update_result), "{'email': 'odasjiohibj'}")
 
+    def test_update_a_user_password(self):
+        update_result = self.ui.update(2, **{
+            "password": "asodpjo"
+        })
+
+        self.assertEqual('{}'.format(update_result), "{}")
+
 if __name__ == '__main__':
     unittest.main()
