@@ -1,6 +1,7 @@
 from typing import Dict, List
 from .lib.placeholder import Placeholder
 
+
 class AbstractInterface:
     """
     AbstractInterface를 상속받아 새 DB Model의 Interface를 만들 수 있습니다. 
@@ -21,13 +22,18 @@ class AbstractInterface:
 
     def perform_create(self, **data: Dict) -> Dict:
         """data를 self.table_name 테이블에 추가합니다."""
-        
-        valid_fields = [key for key in self.create_fields if key in data]
-        if len(valid_fields) <= 0: return None
-        query_fields = ', '.join(valid_fields)
-        fields_values = tuple(data.get(key) for key in self.create_fields if key in data)
+        keys = set(data.keys())
+        unknown_fields = keys - set(self.create_fields)
+        if len(unknown_fields) > 0:
+            # TODO: 허용되지 않은 fields 출력.
+            raise AttributeError(f'{str(unknown_fields)} field(s) is(are) not allowed')
 
-        context = {key: data.get(key) for key in self.create_fields if key in data}
+        valid_fields = [key for key in self.create_fields if key in data] # TODO: self.create_fields를 valid_fields로 바꾸는 것을 검토하기.
+        if len(valid_fields) <= 0:
+            # TODO: mariadb.IntegrityError를 발생하게끔 해당 조건 없애기.
+            return None
+        query_fields = ', '.join(valid_fields)
+        fields_values = tuple(data.get(key) for key in self.create_fields if key in data) # self.create_fields를 valid_fields로 바꿔도 무방.
 
         self.cur.execute(
             f'''
@@ -38,15 +44,19 @@ class AbstractInterface:
             , fields_values
         )
 
+        context = {key: data.get(key) for key in self.retrieve_fields} # self.create_fields를 self.retrieve_fields로 변경.
         context['id'] = self.cur.lastrowid
 
         return context
-
 
     def perform_retrieve(self, id: int = None, fields: List[str] = []):
         """
         id가 지정될 경우 해당하는 한 튜플을, 주어지지 않을 경우 전체 튜플을 SELECT합니다. fields는 속성을 프로젝션할 수 있습니다. 주어지지 않을 경우 전체를 프로젝션합니다.
         """
+        unknown_fields = set(fields) - set(self.retrieve_fields)
+        if len(unknown_fields) > 0:
+            raise AttributeError(f'{str(unknown_fields)} field(s) is(are) not allowed')
+        
         if fields == []:
             fields = self.retrieve_fields
 
@@ -79,11 +89,14 @@ class AbstractInterface:
         """
         id로 지정되는 한 튜플을 data로 갱신합니다.
         """
+        keys = set(data.keys())
+        unknown_fields = keys - set(self.update_fields)
+        if len(unknown_fields) > 0:
+            raise AttributeError(f'{str(unknown_fields)} field(s) is(are) not allowed')
+
         fields_values = tuple(data.get(key) for key in self.update_fields if key in data)
         
         if len(fields_values) <= 0: return None# 허용된 fields에 해당하는 data가 없으면 update할 data가 없다는 것을 의미하므로 종료.
-        
-        context = {key: data.get(key) for key in self.update_fields if key in data}
 
         self.cur.execute(
             f'''
@@ -93,7 +106,12 @@ class AbstractInterface:
             ''',
             (*fields_values, id)
         )
-        context['id'] = id
+
+        # TODO: last affected row가 0 이하이면 None 반환.
+
+        returnable_fields = list(set(self.retrieve_fields).intersection(set(data.keys())))
+
+        context = {key: data.get(key) for key in returnable_fields}
 
         return context
 
