@@ -2,13 +2,12 @@ from typing import Dict
 from .abstract import AbstractInterface
 import bcrypt
 
+
 class UsersInterface(AbstractInterface):
-    def __init__(self, cur):
-        super().__init__(cur)
-        self.create_fields = ['username', 'password', 'email']
-        self.retrieve_fields = ['id', 'username', 'email']
-        self.update_fields = ['password', 'email']
-        self.table_name = 'judge.USERS'
+    create_fields = ['username', 'password', 'email']
+    retrieve_fields = ['id', 'username', 'email']
+    update_fields = ['password', 'email']
+    table_name = 'judge.USERS'
 
     def create(self, **data: Dict):
         if 'password' in data:
