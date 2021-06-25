@@ -108,6 +108,8 @@ class AbstractInterface:
         )
 
         # TODO: last affected row가 0 이하이면 None 반환.
+        if self.cur.rowcount <= 0:
+            return None
 
         returnable_fields = list(set(self.retrieve_fields).intersection(set(data.keys())))
 
