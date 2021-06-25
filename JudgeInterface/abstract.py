@@ -29,9 +29,9 @@ class AbstractInterface:
             raise AttributeError(f'{str(unknown_fields)} field(s) is(are) not allowed')
 
         valid_fields = [key for key in self.create_fields if key in data] # TODO: self.create_fields를 valid_fields로 바꾸는 것을 검토하기.
-        if len(valid_fields) <= 0:
-            # TODO: mariadb.IntegrityError를 발생하게끔 해당 조건 없애기.
-            return None
+        # if len(valid_fields) <= 0:
+        #     # TODO: mariadb.IntegrityError를 발생하게끔 해당 조건 없애기.
+        #     return None
         query_fields = ', '.join(valid_fields)
         fields_values = tuple(data.get(key) for key in self.create_fields if key in data) # self.create_fields를 valid_fields로 바꿔도 무방.
 
