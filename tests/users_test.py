@@ -98,7 +98,6 @@ class UsersInterfaceTest(unittest.TestCase):
         self.assertEqual('{}'.format(user), "{'id': 2, 'username': 'mansukim', 'email': 'changed!!'}")
 
     def test_update_a_user_with_no_args(self):
-        print('test_update_a_user_with_no_args')
         update_result = self.ui.update(2, **{})
         
         self.conn.commit()
