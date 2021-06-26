@@ -106,11 +106,6 @@ class AbstractInterface:
             ''',
             (*fields_values, id)
         )
-
-        # TODO: last affected row가 0 이하이면 None 반환.
-        if self.cur.rowcount <= 0:
-            return None
-
         returnable_fields = list(set(self.retrieve_fields).intersection(set(data.keys())))
 
         context = {key: data.get(key) for key in returnable_fields}
