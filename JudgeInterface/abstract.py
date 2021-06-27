@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import ClassVar, Dict, List
 from .lib.placeholder import Placeholder
 
 
@@ -20,7 +20,7 @@ class AbstractInterface:
         """
         self.cur = cur
 
-    def perform_create(self, **data: Dict) -> Dict:
+    def perform_create(self, return_type = None, **data: Dict) -> Dict:
         """data를 self.table_name 테이블에 추가합니다."""
         keys = set(data.keys())
         unknown_fields = keys - set(self.create_fields)
@@ -46,46 +46,11 @@ class AbstractInterface:
 
         context = {key: data.get(key) for key in self.retrieve_fields} # self.create_fields를 self.retrieve_fields로 변경.
         context['id'] = self.cur.lastrowid
-
+        if return_type != None:
+            return return_type(**context)
         return context
 
-    # def perform_retrieve(self, id: int = None, fields: List[str] = []):
-    #     """
-    #     id가 지정될 경우 해당하는 한 튜플을, 주어지지 않을 경우 전체 튜플을 SELECT합니다. fields는 속성을 프로젝션할 수 있습니다. 주어지지 않을 경우 전체를 프로젝션합니다.
-    #     """
-    #     unknown_fields = set(fields) - set(self.retrieve_fields)
-    #     if len(unknown_fields) > 0:
-    #         raise AttributeError(f'{str(unknown_fields)} field(s) is(are) not allowed')
-        
-    #     if fields == []:
-    #         fields = self.retrieve_fields
-
-    #     placeholder = Placeholder.for_select_query(self.retrieve_fields, fields)
-    #     if placeholder == '': return
-    #     if id == None:
-    #         self.cur.execute(
-    #             f'''
-    #             SELECT {placeholder}
-    #             FROM {self.table_name}
-    #             '''
-    #         )
-    #         lst = self.cur.fetchall()
-    #         return lst
-
-    #     else:
-    #         self.cur.execute(
-    #             f'''
-    #             SELECT {placeholder}
-    #             FROM {self.table_name}
-    #             WHERE id = ?
-    #             ''',
-    #             (id,)
-    #         )
-    #         row = self.cur.fetchone()
-    #         if not row: return None
-    #         return row
-
-    def perform_retrieve(self, project_fields: List = [], **where_kwargs: Dict):
+    def perform_retrieve(self, return_type=None, project_fields: List = [], **where_kwargs: Dict):
         # project_fields중 self.retrieve_fields에 없는 fields가 있다면 AttributeError.
         unknown_fields = set(project_fields) - set(self.retrieve_fields)
         if len(unknown_fields) > 0:
@@ -120,7 +85,15 @@ class AbstractInterface:
             self.cur.execute(query)
 
         # fetchall / many하고 for loop에서 self.DTO의 instance로 구성된 List를 반환. (공통)
-        lst = self.cur.fetchall()
+        lst = []
+        if return_type != None:
+            for t in self.cur:
+                instance = return_type(**t)
+                lst.append(instance)
+        else:
+            for t in self.cur:
+                lst.append(t)
+
         return lst
 
     def perform_update(self, id: int, **data: Dict) -> Dict:
@@ -169,11 +142,11 @@ class AbstractInterface:
         """
         return self.perform_create(**data)
 
-    def retrieve(self, project_fields: List = [], **where_kwargs: Dict):
+    def retrieve(self, return_type=None, project_fields: List = [], **where_kwargs: Dict):
         """
         id가 지정될 경우 해당하는 한 튜플을, 주어지지 않을 경우 전체 튜플을 SELECT합니다. fields는 속성을 프로젝션할 수 있습니다. 주어지지 않을 경우 전체를 프로젝션합니다.
         """
-        return self.perform_retrieve(project_fields, **where_kwargs)
+        return self.perform_retrieve(return_type, project_fields, **where_kwargs)
 
     def update(self, id: int, **data: Dict) -> Dict:
         """
