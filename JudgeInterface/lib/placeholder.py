@@ -11,14 +11,27 @@ class Placeholder:
         return placeholder
 
     @staticmethod
-    def for_select_query(select_fields: List[str], requested_fields: List[str]) -> str:
-        filtered_fields = list(filter(lambda field: field in requested_fields, select_fields))
-        if len(filtered_fields) <= 0: return ''
+    def for_select_query(requested_fields: List[str]) -> str:
         placeholder = ''
-        for field in filtered_fields:
+        for field in requested_fields:
             placeholder += f'{field}, '
         placeholder = re.sub(', $', '', placeholder)
-        return placeholder   
+        return placeholder
+        # filtered_fields = list(filter(lambda field: field in requested_fields, select_fields))
+        # if len(filtered_fields) <= 0: return ''
+        # placeholder = ''
+        # for field in filtered_fields:
+        #     placeholder += f'{field}, '
+        # placeholder = re.sub(', $', '', placeholder)
+        # return placeholder   
+
+    @staticmethod
+    def for_where_query(requested_fields: List[str]) -> str:
+        placeholder = ''
+        for key in requested_fields:
+            placeholder += key + ' = ? AND '
+        placeholder = re.sub(' AND $', '', placeholder)
+        return placeholder
 
     @staticmethod
     def for_update_query(update_fields: List[str], **data: Dict) -> str:
