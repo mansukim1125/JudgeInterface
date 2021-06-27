@@ -7,7 +7,7 @@ with open(path.join(this_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='JudgeInterface',
-    version='1.0.11',
+    version='1.0.13',
     description='A DB Interface for Judge',
     long_description=long_description,
     long_description_content_type='text/markdown',
