@@ -173,7 +173,7 @@ class AbstractInterface:
         """
         id가 지정될 경우 해당하는 한 튜플을, 주어지지 않을 경우 전체 튜플을 SELECT합니다. fields는 속성을 프로젝션할 수 있습니다. 주어지지 않을 경우 전체를 프로젝션합니다.
         """
-        return self.perform_retrieve(id, project_fields, **where_kwargs)
+        return self.perform_retrieve(project_fields, **where_kwargs)
 
     def update(self, id: int, **data: Dict) -> Dict:
         """

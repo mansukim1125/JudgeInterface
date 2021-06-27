@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 from os import path
 
 this_dir = path.abspath(path.dirname(__name__))
@@ -7,7 +7,7 @@ with open(path.join(this_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='JudgeInterface',
-    version='1.0.9',
+    version='1.0.11',
     description='A DB Interface for Judge',
     long_description=long_description,
     long_description_content_type='text/markdown',
