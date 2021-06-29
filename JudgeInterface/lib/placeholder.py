@@ -17,13 +17,6 @@ class Placeholder:
             placeholder += f'{field}, '
         placeholder = re.sub(', $', '', placeholder)
         return placeholder
-        # filtered_fields = list(filter(lambda field: field in requested_fields, select_fields))
-        # if len(filtered_fields) <= 0: return ''
-        # placeholder = ''
-        # for field in filtered_fields:
-        #     placeholder += f'{field}, '
-        # placeholder = re.sub(', $', '', placeholder)
-        # return placeholder   
 
     @staticmethod
     def for_where_query(requested_fields: List[str]) -> str:
@@ -34,10 +27,9 @@ class Placeholder:
         return placeholder
 
     @staticmethod
-    def for_update_query(update_fields: List[str], **data: Dict) -> str:
+    def for_update_query(update_fields: List[str]) -> str:
         placeholder = ''
         for key in update_fields:
-            if key in data:
-                placeholder += key + ' = ?, '
+            placeholder += key + ' = ?, '
         placeholder = re.sub(', $', '', placeholder)
         return placeholder
