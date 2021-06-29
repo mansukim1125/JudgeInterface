@@ -18,14 +18,14 @@ class UsersInterfaceTest(unittest.TestCase):
 
     def test_create_a_user_with_no_args(self):
         with self.assertRaises(mariadb.IntegrityError) as e:
-            self.ui.create(**{})
+            self.ui.create(None, **{})
 
         self.conn.commit()
         self.conn.close()
 
     def test_create_a_user_with_un_allowed_fields(self):
         with self.assertRaises(AttributeError) as e:
-            self.ui.create(**{
+            self.ui.create(None, **{
                 "asouigyu": "asdiohgiyh"
             })
 
@@ -37,7 +37,7 @@ class UsersInterfaceTest(unittest.TestCase):
 
     def test_create_a_user_with_args_both_un_allowed_and_allowed(self):
         with self.assertRaises(AttributeError) as e:
-            self.ui.create(**{
+            self.ui.create(None, **{
                 "password": "oasiduigy",
                 "asouigyu": "asdiohgiyh",
                 "email": "asjdiohgihj",
@@ -58,7 +58,7 @@ class UsersInterfaceTest(unittest.TestCase):
         for i in range(16):
             rand_string += random.choice(letters)
         
-        context = self.ui.create(**{
+        context = self.ui.create(None, **{
             "password": "asdsadasd",
             "email": "lojpihogyuft",
             "username": rand_string
@@ -70,23 +70,30 @@ class UsersInterfaceTest(unittest.TestCase):
         self.assertRegex(str(context), r"^{'id': (\d+), 'username': '%s', 'email': 'lojpihogyuft'}$" % rand_string)
 
     def test_retrieve_a_user_with_no_args(self):
-        user = self.ui.retrieve(2)
-        self.assertEqual('{}'.format(user), "{'id': 2, 'username': 'mansukim', 'email': 'changed!!'}")
+        user = self.ui.retrieve(None, [], **{"id": 2})
+        self.assertEqual('{}'.format(user), "[{'id': 2, 'username': 'mansukim', 'email': 'odasjiohibj'}]")
+        self.assertListEqual(user, [
+            {
+                'id': 2,
+                'username': 'mansukim',
+                'email': 'odasjiohibj'
+            }
+        ])
 
     def test_retrieve_a_user_that_not_exists(self):
-        user = self.ui.retrieve(0)
-        self.assertEqual('{}'.format(user), 'None')
+        user = self.ui.retrieve(None, [], **{"id": 0})
+        self.assertEqual('{}'.format(user), '[]')
 
     def test_retrieve_a_user_with_un_allowed_args(self):
         with self.assertRaises(AttributeError) as e:
-            self.ui.retrieve(2, ['asjdihogu'])
+            self.ui.retrieve(None, ['asjdihogu'], **{"id": 2})
 
         error_msg = e.exception
         self.assertEqual('{}'.format(error_msg), "{'asjdihogu'} field(s) is(are) not allowed")
 
     def test_retrieve_a_user_with_args_both_un_allowed_and_allowed(self):
         with self.assertRaises(AttributeError) as e:
-            self.ui.retrieve(2, ['password', 'asdjihougi', 'email', 'username', 'id'])
+            self.ui.retrieve(None, ['password', 'asdjihougi', 'email', 'username', 'id'], **{"id": 2})
 
         error_msg = e.exception
 
@@ -94,8 +101,16 @@ class UsersInterfaceTest(unittest.TestCase):
         self.assertIn('password', '{}'.format(error_msg))
 
     def test_retrieve_a_user_with_args_allowed(self):
-        user = self.ui.retrieve(2, ['username', 'email', 'id'])
-        self.assertEqual('{}'.format(user), "{'id': 2, 'username': 'mansukim', 'email': 'changed!!'}")
+        user = self.ui.retrieve(None, ['username', 'email', 'id'], **{"id": 2})
+        self.assertEqual('{}'.format(user), "[{'username': 'mansukim', 'email': 'odasjiohibj', 'id': 2}]")
+
+        self.assertListEqual(user, [
+            {
+                'id': 2,
+                'username': 'mansukim',
+                'email': 'odasjiohibj'
+            }
+        ])
 
     def test_update_a_user_with_no_args(self):
         update_result = self.ui.update(2, **{})
@@ -106,7 +121,6 @@ class UsersInterfaceTest(unittest.TestCase):
         self.assertEqual('{}'.format(update_result), 'None')
 
     def test_update_a_user_that_not_exists(self):
-        # self.cur.rowcount: 0
         update_result = self.ui.update(0, **{
             "email": "iasudigyu"
         })
@@ -114,7 +128,7 @@ class UsersInterfaceTest(unittest.TestCase):
         self.conn.commit()
         self.conn.close()
 
-        self.assertEqual('{}'.format(update_result), 'None')
+        self.assertEqual('{}'.format(update_result), "{'email': 'iasudigyu'}")
 
     def test_update_a_user_with_un_allowed_args(self):
         with self.assertRaises(AttributeError) as e:
@@ -151,18 +165,25 @@ class UsersInterfaceTest(unittest.TestCase):
     def test_update_a_user_with_args_allowed(self):
         # self.cur.rowcount: 1
         update_result = self.ui.update(2, **{
-            "password": "asodpjo",
+            "password": "paskopdj",
             "email": "odasjiohibj"
         })
+
+        self.conn.commit()
+        self.conn.close()
 
         self.assertEqual('{}'.format(update_result), "{'email': 'odasjiohibj'}")
 
     def test_update_a_user_password(self):
         update_result = self.ui.update(2, **{
-            "password": "asodpjo"
+            "password": "aso[djkjo"
         })
 
+        self.conn.commit()
+        self.conn.close()
+
         self.assertEqual('{}'.format(update_result), "{}")
+
 
 if __name__ == '__main__':
     unittest.main()

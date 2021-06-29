@@ -14,7 +14,7 @@ class RetrieveTest(unittest.TestCase):
 
     def test_retrieve_with_unknown_projection_fields(self):
         with self.assertRaises(AttributeError) as e:
-            self.ui.perform_retrieve(['asdjihui'])
+            self.ui.perform_retrieve(None, ['asdjihui'])
 
         error_msg = e.exception
         self.assertEqual('{}'.format(error_msg), "{'asdjihui'} field(s) is(are) not allowed")
@@ -27,7 +27,7 @@ class RetrieveTest(unittest.TestCase):
 
     def test_retrieve_with_unknown_selection_fields(self):
         with self.assertRaises(AttributeError) as e:
-            self.ui.perform_retrieve(['username'], **{
+            self.ui.perform_retrieve(None, ['username'], **{
                 "asjidho": "aosjdioh"
             })
         
@@ -36,13 +36,13 @@ class RetrieveTest(unittest.TestCase):
 
     def test_retrieve_with_no_selection_fields(self):
         print('test_retrieve_with_no_selection_fields')
-        query = self.ui.perform_retrieve(['username'])
+        query = self.ui.perform_retrieve(None, ['username'])
         print(query)
         # self.assertEqual(query, """SELECT username\nFROM judge.USERS""")
 
     def test_retrieve_with_selection_fields(self):
         print('test_retrieve_with_selection_fields')
-        query = self.ui.perform_retrieve(['username'], **{
+        query = self.ui.perform_retrieve(None, ['username'], **{
             "email": "changed_email1",
             "id": 2
         })
@@ -51,8 +51,7 @@ class RetrieveTest(unittest.TestCase):
 
     def test_retrieve_with_id(self):
         print('test_retrieve_with_id')
-        result = self.ui.perform_retrieve(
-            ['username'], **{
+        result = self.ui.perform_retrieve(None, ['username'], **{
                 "id": 2
             }
         )[0]
