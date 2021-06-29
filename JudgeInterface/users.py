@@ -9,13 +9,13 @@ class UsersInterface(AbstractInterface):
     update_fields = ['password', 'email']
     table_name = 'judge.USERS'
 
-    def create(self, **data: Dict):
+    def create(self, return_type=None, **data: Dict):
         if 'password' in data:
             password = data.get('password')
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             data['password'] = hashed_password.decode()
         
-        return super().create(**data)
+        return super().create(return_type, **data)
 
     def update(self, id: int, **data: Dict):
         if 'password' in data:
